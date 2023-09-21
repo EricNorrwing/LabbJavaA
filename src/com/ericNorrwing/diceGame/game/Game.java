@@ -18,6 +18,7 @@ public class Game {
 
     }
 
+    //Just make a new method to put new objects into arraylist. No need for the "addPlayer" function
     public static void newGame(){
         System.out.println("Hello, how many would like to play? ");
         InputScanner scanner = new InputScanner();
