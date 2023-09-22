@@ -18,11 +18,12 @@ public class Game {
         Menu menu = new Menu();
         Game game = new Game();
 
-        menu.menu();
+        int menuChoice  = menu.menu();
+
+
 
         //Runs the input put by the player, new game/highscore/exit
 
-        //Playerlist toString() functions, can edit how it prints later
 
     }
 
