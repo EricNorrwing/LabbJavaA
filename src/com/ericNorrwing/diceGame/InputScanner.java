@@ -1,4 +1,4 @@
-package com.ericNorrwing.diceGame.scanner;
+package com.ericNorrwing.diceGame;
 
 import java.util.Scanner;
 
@@ -12,4 +12,9 @@ public class InputScanner {
     public String scanString(){
         return scanner.nextLine();
     }
+
+    public void clearScanner(){
+        scanner.nextLine();
+    }
+
 }

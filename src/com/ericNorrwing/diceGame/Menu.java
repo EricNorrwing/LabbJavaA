@@ -1,10 +1,4 @@
-package com.ericNorrwing.diceGame.menu;
-
-import com.ericNorrwing.diceGame.game.Game;
-import com.ericNorrwing.diceGame.scanner.InputScanner;
-import com.ericNorrwing.diceGame.playerFunctions.Player;
-
-import java.util.Scanner;
+package com.ericNorrwing.diceGame;
 
 public class Menu {
 
@@ -14,12 +8,13 @@ public class Menu {
 
         InputScanner scanner = new InputScanner();
         int choice = scanner.scanInt();
+        Game game = new Game();
 
         //Standard menu choices
         switch (choice) {
             case 1:
-                Game.newGame();
-                Game.playGame();
+                game.newGame();
+                game.playGame();
                 return choice;
             case 2:
                 //getHighscore();
