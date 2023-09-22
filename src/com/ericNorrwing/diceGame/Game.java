@@ -15,10 +15,28 @@ public class Game {
 
     //Welcome to the main game
     public void playGame(){
-        Menu menu = new Menu();
-        Game game = new Game();
 
-        int menuChoice  = menu.menu();
+
+        //Game game = new Game();
+
+        // new game();
+        // highScore();
+        // Exit();
+        switch (menu()) {
+            case 1:
+                newGame();
+            case 2:
+                //getHighscore();
+            case 3:
+                //exitGame();
+            default:
+                System.out.println("Please enter a valid alternative. Values accepted are 1-3");
+                return;
+
+        }
+
+
+        //int menuChoice  = menu.menu();
 
 
 
@@ -27,7 +45,6 @@ public class Game {
 
     }
 
-    //Just make a new method to put new objects into arraylist. No need for the "addPlayer" function
     public void newGame(){
         System.out.println("Hello, how many would like to play?");
         int j = scanner.scanInt();
@@ -51,6 +68,14 @@ public class Game {
     private int rollDice(){
         return (int)(Math.random() * 6) + 1;
 
+    }
+
+    public int menu(){
+        System.out.println("Welcome to the menu: Please make a choice: ");
+        System.out.println("1. New Game \n2. Check highscore \n3. Exit game");
+
+        InputScanner scanner = new InputScanner();
+        return scanner.scanInt();
     }
 
 }
