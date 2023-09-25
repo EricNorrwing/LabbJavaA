@@ -8,8 +8,8 @@ public class Game {
 
     //initialize some stuff i might move them later?
 
-    List<Object> playerList = new ArrayList<>();
-    int dice = 0;
+    List<Player> playerList = new ArrayList<>();
+    int[] diceList = {0,0,0,0,0};
     InputScanner scanner = new InputScanner();
 
 
@@ -25,6 +25,8 @@ public class Game {
         switch (menu()) {
             case 1:
                 newGame();
+                runGame();
+
             case 2:
                 //getHighscore();
             case 3:
@@ -45,6 +47,15 @@ public class Game {
 
     }
 
+    private int runGame(){
+        for (int i = 0; i < playerList.size(); i++){
+            rollNewRound();
+            Player currentPlayer = playerList.get(i);
+            System.out.println("Heres your dice " + currentPlayer.getName());
+            printCurrentDice();
+        }
+        return 0;
+    }
     public void newGame(){
         System.out.println("Hello, how many would like to play?");
         int j = scanner.scanInt();
@@ -59,6 +70,7 @@ public class Game {
 
 
         }
+        //remove later, prints the players
         System.out.println(playerList.toString());
 
 
@@ -68,6 +80,19 @@ public class Game {
     private int rollDice(){
         return (int)(Math.random() * 6) + 1;
 
+    }
+
+    private void rollNewRound(){
+        for(int i = 0; i < diceList.length; i++){
+            diceList[i] = rollDice();
+
+        }
+    }
+
+    private void printCurrentDice(){
+        for(int i: diceList) {
+            System.out.print(i + " ");
+        }
     }
 
     public int menu(){
