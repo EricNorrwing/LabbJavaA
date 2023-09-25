@@ -80,6 +80,7 @@ public class Game {
                 int firstDiceCheck = diceList[i];
                 for (int j = 0; j < diceList.length; j++) {
                     if (i == j) {
+                        System.out.println("im in the i is J loop");
                         continue;
                     }else{
                         int secondDiceCheck = diceList[j];
