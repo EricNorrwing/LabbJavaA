@@ -1,15 +1,26 @@
 package com.ericNorrwing.diceGame;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+//Temp?
+import java.util.Map;
 
 
 public class Game {
 
     //initialize some stuff i might move them later?
-
+    //List of all current players
     List<Player> playerList = new ArrayList<>();
-    int[] diceList = {0,0,0,0,0,0};
+    //List of current dice in the round
+    List<Integer> diceList = new ArrayList<>();
+    //HashMap of all unique values and the amount of occurances, used for calculating score
+    Map<Integer, Integer> map = new HashMap<>();
+    //Amount of dice rolled per round
+    int diceChoice = 12;
+    //How many sides each die has
+    int diceSides = 0;
+    //My scanner class
     InputScanner scanner = new InputScanner();
     final int ARRAY_LIST_REROLL = -1;
 
@@ -30,6 +41,7 @@ public class Game {
                 break;
             case 2:
                 testAllTheStuff();
+                calculateScore();
                 break;
                 //getHighscore();
             case 3:
@@ -39,15 +51,6 @@ public class Game {
                 return;
 
         }
-
-
-        //int menuChoice  = menu.menu();
-
-
-
-        //Runs the input put by the player, new game/highscore/exit
-
-
     }
 
     private int runGame(){
@@ -68,41 +71,52 @@ public class Game {
     }
     private int checkScore(){
         checkMultiples();
+        calculateScore();
         //checkOnes();
         //checkFives();
         return 0;
     }
-    private int checkMultiples(){
-        int score = 0;
-        int dupeCounter = 0;
-        int diceDupeValue = 0;
-            for (int i = 0; i < diceList.length; i++) {
-                int firstDiceCheck = diceList[i];
-                for (int j = 0; j < diceList.length; j++) {
-                    if (i == j) {
-                        System.out.println("im in the i is J loop");
-                        continue;
-                    }else{
-                        int secondDiceCheck = diceList[j];
-                        if (firstDiceCheck == secondDiceCheck) {
-                            System.out.println("youre in loop " + i);
-                            diceDupeValue = firstDiceCheck;
-                            dupeCounter++;
-                    }
-
-
-                    }
-                }
-            }
-        if(dupeCounter >= 3){
-            System.out.println(dupeCounter);
-            System.out.println("Dice dupe value is " + diceDupeValue);
+    private void checkMultiples(){
+       int incrementValue = 0;
+       //Puts ALL the values from diceList<> as keys in map
+       for (int i = 0; i < diceList.toArray().length; i++){
+           map.put(diceList.get(i),incrementValue);
+       }
+        /*
+        Iterates through DiceList again, for every value it then digs up the map.get(i) list
+        saves the value, increments it, and adds it back.
+        This means it saves the amount of occurances of each die in the map.
+        */
+        for (int i: diceList){
+           incrementValue = map.get(i);
+           incrementValue++;
+           map.put(i, incrementValue);
         }
+        System.out.println(map); //Testing
+    }
+
+    private int calculateScore(){
+        int score = 0;
+        int currentDie = 0;
+        for (int i: map.keySet()){
+            currentDie = i;
+            if (map.get(i)>= 3){
+                if (i == 1) {
+                    score = score + 10*100;
+                } else {
+                    score = score + currentDie * 100;
+
+                }
+
+            }
+        }
+        System.out.println(score);
         return score;
     }
+
     private boolean checkIfDiceScored(){
-        for (int i = 0; i < diceList.length; i++){
-            if(diceList[i] == 1 || diceList[i] == 5){
+        for (int i = 0; i < diceList.size(); i++){
+            if(diceList.get(i) == 1 || diceList.get(i) == 5){
                 System.out.println("You scored something");
                 return true;
             }
@@ -138,8 +152,8 @@ public class Game {
     }
 
     private void rollNewRound(){
-        for(int i = 0; i < diceList.length; i++){
-            diceList[i] = rollDice();
+        for(int i = 0; i < diceChoice; i++){
+            diceList.add(rollDice());
 
         }
     }
