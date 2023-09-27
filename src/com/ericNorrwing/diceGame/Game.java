@@ -22,6 +22,8 @@ public class Game {
     int diceSides = 6;
     //Sets the value to end the game
     int endScore = 0;
+    //used to retain the current pot when passing rounds
+    int currentPot = 0;
     //My scanner class
     InputScanner scanner = new InputScanner();
     final int ARRAY_LIST_REROLL = -1;
@@ -62,10 +64,11 @@ public class Game {
             System.out.println("Heres your dice " + currentPlayer.getName());
             printCurrentDice();
             checkScore();
-            if (checkIfDiceScored()){
-                System.out.println("Which dice would you like to keep? Current score is : ");
+            if (currentPot>0){
+                System.out.println("Which dice would you like to keep? Current score is : " + currentPot);
             } else {
                 System.out.println("You didnt score any points");
+                currentPot = 0;
             }
 
         }
@@ -73,10 +76,9 @@ public class Game {
     }
     private int checkScore(){
         checkMultiples();
-        calculateScore();
-        //checkOnes();
-        //checkFives();
-        return 0;
+        currentPot = currentPot + calculateScore();
+        map.clear();
+        return currentPot;
     }
     private void checkMultiples(){
        int incrementValue = 0;
@@ -112,9 +114,9 @@ public class Game {
                 }
 
             } else if (currentDie == 1){
-                score = 100*map.get(i);
+                score = score + 100*map.get(i);
             } else if (currentDie == 5) {
-                score = 50*map.get(i);
+                score = score + 50*map.get(i);
             }
         }
         System.out.println(score);
