@@ -17,9 +17,11 @@ public class Game {
     //HashMap of all unique values and the amount of occurances, used for calculating score
     Map<Integer, Integer> map = new HashMap<>();
     //Amount of dice rolled per round
-    int diceChoice = 12;
+    int diceChoice = 6;
     //How many sides each die has
-    int diceSides = 0;
+    int diceSides = 6;
+    //Sets the value to end the game
+    int endScore = 0;
     //My scanner class
     InputScanner scanner = new InputScanner();
     final int ARRAY_LIST_REROLL = -1;
@@ -85,14 +87,13 @@ public class Game {
         /*
         Iterates through DiceList again, for every value it then digs up the map.get(i) list
         saves the value, increments it, and adds it back.
-        This means it saves the amount of occurances of each die in the map.
+        This means it saves the amount of occurrences of each die in the map.
         */
         for (int i: diceList){
            incrementValue = map.get(i);
            incrementValue++;
            map.put(i, incrementValue);
         }
-        System.out.println(map); //Testing
     }
 
     private int calculateScore(){
@@ -101,13 +102,19 @@ public class Game {
         for (int i: map.keySet()){
             currentDie = i;
             if (map.get(i)>= 3){
+                int scoreMultiplier = map.get(i)-3;
                 if (i == 1) {
-                    score = score + 10*100;
+                    score = score + 10*100*(int)Math.pow(2,scoreMultiplier);
+
                 } else {
-                    score = score + currentDie * 100;
+                    score = score + currentDie * 100*(int)Math.pow(2,scoreMultiplier);
 
                 }
 
+            } else if (currentDie == 1){
+                score = 100*map.get(i);
+            } else if (currentDie == 5) {
+                score = 50*map.get(i);
             }
         }
         System.out.println(score);
@@ -147,7 +154,7 @@ public class Game {
 
     //Returns 1-6
     private int rollDice(){
-        return (int)(Math.random() * 6) + 1;
+        return (int)(Math.random() * diceSides) + 1;
 
     }
 
