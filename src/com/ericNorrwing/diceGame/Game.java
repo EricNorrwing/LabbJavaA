@@ -123,21 +123,6 @@ public class Game {
         return score;
     }
 
-    private boolean checkIfDiceScored(){
-        for (int i = 0; i < diceList.size(); i++){
-            if(diceList.get(i) == 1 || diceList.get(i) == 5){
-                System.out.println("You scored something");
-                return true;
-            }
-            else{
-                System.out.println("You didnt score");
-                return false;
-
-            }
-        }
-        System.out.println("this is an error code");
-        return false;
-    }
     public void newGame(){
         System.out.println("Hello, how many would like to play?");
         int j = scanner.scanInt();
