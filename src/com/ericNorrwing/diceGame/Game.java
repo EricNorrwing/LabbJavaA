@@ -1,10 +1,7 @@
 package com.ericNorrwing.diceGame;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 //Temp?
-import java.util.Map;
 
 
 public class Game {
@@ -14,16 +11,16 @@ public class Game {
     List<Player> playerList = new ArrayList<>();
     //List of current dice in the round
     List<Integer> diceList = new ArrayList<>();
+    List<Integer> diceReRandom = new ArrayList<Integer>();
     //HashMap of all unique values and the amount of occurances, used for calculating score
     Map<Integer, Integer> map = new HashMap<>();
     //Amount of dice rolled per round
     int diceChoice = 6;
     //How many sides each die has
     int diceSides = 6;
+    int currentPot = 0;
     //Sets the value to end the game
     int endScore = 0;
-    //used to retain the current pot when passing rounds
-    int currentPot = 0;
     //My scanner class
     InputScanner scanner = new InputScanner();
     final int ARRAY_LIST_REROLL = -1;
@@ -47,7 +44,7 @@ public class Game {
                 testAllTheStuff();
                 calculateScore();
                 break;
-                //getHighscore();
+            //getHighscore();
             case 3:
                 //exitGame();
             default:
@@ -58,43 +55,66 @@ public class Game {
     }
 
     private int runGame(){
-        for (int i = 0; i < playerList.size(); i++){
-            rollNewRound();
+        diceList.clear();
+        rollNewRound();
+        playRound();
+
+        return 0;
+    }
+    private void playRound(){
+        for (int i = 0; i < playerList.size(); i++) {
             Player currentPlayer = playerList.get(i);
             System.out.println("Heres your dice " + currentPlayer.getName());
             printCurrentDice();
-            checkScore();
-            if (currentPot>0){
-                System.out.println("Which dice would you like to keep? Current score is : " + currentPot);
+            currentPot = currentPot + checkScore();
+            if (currentPot >= 0) {
+                System.out.println("Current pot is: " + currentPot);
+                System.out.println("How many Die would you like to reroll?: ");
+                int amountOfRerolls = scanner.scanInt();
+                diceReRandom = scanner.chooseDice(amountOfRerolls);
+                rerollDie();
+                printCurrentDice();
+                System.out.println(currentPot);
             } else {
-                System.out.println("You didnt score any points");
+                System.out.println("You didnt score any points, the pot has been reset");
                 currentPot = 0;
             }
+        }
+    }
+
+    private void rerollDie(){
+        for (int i = 0; i < diceReRandom.size(); i++){
+            int j = diceReRandom.get(i)-1;
+            diceList.set(j,ARRAY_LIST_REROLL);
 
         }
-        return 0;
+
+        for (int i = 0; i < diceList.size(); i++){
+            int temp = diceList.get(i);
+            if (temp == -1){
+                diceList.set(i,rollDice());
+            }
+        }
     }
     private int checkScore(){
         checkMultiples();
-        currentPot = currentPot + calculateScore();
-        map.clear();
-        return currentPot;
+        return calculateScore();
     }
     private void checkMultiples(){
-       int incrementValue = 0;
-       //Puts ALL the values from diceList<> as keys in map
-       for (int i = 0; i < diceList.toArray().length; i++){
-           map.put(diceList.get(i),incrementValue);
-       }
+        int incrementValue = 0;
+        //Puts ALL the values from diceList<> as keys in map
+        for (int i = 0; i < diceList.toArray().length; i++){
+            map.put(diceList.get(i),incrementValue);
+        }
         /*
         Iterates through DiceList again, for every value it then digs up the map.get(i) list
         saves the value, increments it, and adds it back.
         This means it saves the amount of occurrences of each die in the map.
         */
         for (int i: diceList){
-           incrementValue = map.get(i);
-           incrementValue++;
-           map.put(i, incrementValue);
+            incrementValue = map.get(i);
+            incrementValue++;
+            map.put(i, incrementValue);
         }
     }
 
@@ -106,7 +126,7 @@ public class Game {
             if (map.get(i)>= 3){
                 int scoreMultiplier = map.get(i)-3;
                 if (i == 1) {
-                    score = score + 10*100*(int)Math.pow(2,scoreMultiplier);
+                    score = score + 1000*(int)Math.pow(2,scoreMultiplier);
 
                 } else {
                     score = score + currentDie * 100*(int)Math.pow(2,scoreMultiplier);
@@ -131,9 +151,9 @@ public class Game {
             if(i == 0){
                 scanner.clearScanner();
             }
-                System.out.println("Enter player:" + (i+1) + " name");
-                Player player = new Player(scanner.scanString(), 0,0,0);
-                playerList.add(player);
+            System.out.println("Enter player:" + (i+1) + " name");
+            Player player = new Player(scanner.scanString(), 0,0,0);
+            playerList.add(player);
 
 
         }
@@ -162,7 +182,7 @@ public class Game {
         rollNewRound();
         printCurrentDice();
         checkScore();
-        System.out.println("lmao testing shit");
+        //scanner.chooseDice();
     }
 
 }
