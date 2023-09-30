@@ -1,7 +1,9 @@
 package com.ericNorrwing.diceGame;
 
-import java.util.*;
-//Temp?
+import java.util.ArrayList;
+import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 
 public class Game {
@@ -15,9 +17,9 @@ public class Game {
     //HashMap of all unique values and the amount of occurances, used for calculating score
     Map<Integer, Integer> map = new HashMap<>();
     //Amount of dice rolled per round
-    int diceChoice = 6;
+    int amountOfDice = 0;
     //How many sides each die has
-    int diceSides = 6;
+    int diceSides = 0;
     int currentPot = 0;
     //Sets the value to end the game
     int endScore = 0;
@@ -157,6 +159,10 @@ public class Game {
 
 
         }
+        System.out.println("How many dice would you like to use? (Recommended is 6, but values accepted are 1-20):  ");
+        amountOfDice = scanner.setDiceAmount();
+        System.out.println("How many sides does each die have?");
+        diceSides = scanner.setDiceSides();
     }
 
     //Returns 1-6
@@ -166,7 +172,7 @@ public class Game {
     }
 
     private void rollNewRound(){
-        for(int i = 0; i < diceChoice; i++){
+        for(int i = 0; i < amountOfDice; i++){
             diceList.add(rollDice());
 
         }
