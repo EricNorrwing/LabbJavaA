@@ -13,6 +13,7 @@ public class Game {
     List<Player> playerList = new ArrayList<>();
     //List of current dice in the round
     List<Integer> diceList = new ArrayList<>();
+    List<Integer> remainingDiceList = new ArrayList<>();
     List<Integer> diceReRandom = new ArrayList<Integer>();
     //HashMap of all unique values and the amount of occurances, used for calculating score
     Map<Integer, Integer> map = new HashMap<>();
@@ -21,6 +22,8 @@ public class Game {
     //How many sides each die has
     int diceSides = 0;
     int currentPot = 0;
+    //How many die you kept each round, must always be 1 or more.
+    int keptDie = 0;
     //Sets the value to end the game
     int endScore = 0;
     //My scanner class
@@ -71,15 +74,17 @@ public class Game {
             currentPot = currentPot + checkScore();
             if (currentPot >= 0) {
                 System.out.println("Current pot is: " + currentPot);
-                System.out.println("How many Die would you like to reroll?: ");
+                System.out.println("How many Die would you like to reroll? You must keep atleast one die: ");
                 int amountOfRerolls = scanner.scanInt();
+                keptDie = diceList.size()-amountOfRerolls;
+                System.out.println(keptDie);
                 diceReRandom = scanner.chooseDice(amountOfRerolls);
                 rerollDie();
                 printCurrentDice();
-                System.out.println(currentPot);
             } else {
                 System.out.println("You didnt score any points, the pot has been reset");
                 currentPot = 0;
+                keptDie = 0;
             }
         }
     }
@@ -89,12 +94,16 @@ public class Game {
             int j = diceReRandom.get(i)-1;
             diceList.set(j,ARRAY_LIST_REROLL);
 
+
         }
 
         for (int i = 0; i < diceList.size(); i++){
             int temp = diceList.get(i);
             if (temp == -1){
                 diceList.set(i,rollDice());
+            } else {
+                remainingDiceList.add(temp);
+                System.out.println(remainingDiceList);
             }
         }
     }
