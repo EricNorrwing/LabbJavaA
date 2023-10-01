@@ -9,13 +9,13 @@ public class InputScanner {
     public int scanInt(){
         return scanner.nextInt();
     }
-    public int setDiceAmount(){
-        int temp = scanner.nextInt();
+    public int setDiceAmount() {
         boolean tempBool = true;
+        int temp;
         do {
+            temp = scanner.nextInt();
             if (temp <= 0 || temp >= 20) {
                 System.out.println("That value is outside bounds, please chose a value between 1-20");
-
             } else {
                 tempBool = false;
             }
@@ -24,13 +24,14 @@ public class InputScanner {
     }
 
     public int setDiceSides(){
-        int temp = 0;
+        int temp;
         boolean tempBool = true;
         do {
             temp = scanner.nextInt();
-            if (temp <= 0 || temp >= 20 || temp == 3) {
+            if (temp <= 0 || temp >= 20) {
                 System.out.println("That value is outside bounds, please chose a value between 1-20");
-                temp = scanner.nextInt();
+            } else if ( temp == 3) {
+                System.out.println("Theres no physical dimension for an object with 3 sides, please try again");
             } else {
                 tempBool = false;
             }
