@@ -4,14 +4,12 @@ public class Player {
 
     String name;
     int score;
-    int id;
     int turnsPlayed;
 
 
     public Player(String name, int score, int id, int turnsPlayed) {
         this.name = name;
         this.score = score;
-        this.id = id;
         this.turnsPlayed = turnsPlayed;
     }
 
@@ -21,6 +19,14 @@ public class Player {
 
     public void setScore(int score) {
         this.score = score;
+    }
+
+    public int getTurnsPlayed() {
+        return turnsPlayed;
+    }
+
+    public void setTurnsPlayed(int turnsPlayed) {
+        this.turnsPlayed = turnsPlayed;
     }
 
     public int getScore() {

@@ -53,6 +53,7 @@ public class InputScanner {
     }
     public List<Integer> chooseDice (int amountOfRerolls){
         List<Integer> tempList = new ArrayList<>();
+        System.out.println("Please insert " + amountOfRerolls + " numbers");
             for (int i = 0; i < amountOfRerolls; i++) {
                 int k = scanner.nextInt();
                 tempList.add(k);

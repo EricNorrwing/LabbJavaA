@@ -76,9 +76,13 @@ public class Game {
     * */
     private void playRound(){
         boolean continuePlaying;
-        for (int i = 0; i < playerList.size(); i++) {
-            Player currentPlayer = playerList.get(i);
-            //Start the loop here
+        boolean firstLoop = true;
+        int loopedPot = 0;
+        do {
+
+            for (int i = 0; i < playerList.size(); i++) {
+                Player currentPlayer = playerList.get(i);
+                //Start the loop here
                 System.out.println("Heres your dice " + currentPlayer.getName());
                 printCurrentDice();
                 currentPot = checkScore();
@@ -86,21 +90,62 @@ public class Game {
                 scanner.clearScanner();
                 continuePlaying = scanner.yesOrNo();
 
-            while (continuePlaying) {
-                System.out.println("How many Die would you like to reroll? You must keep atleast one die: ");
-                int amountOfRerolls = scanner.selectHowManyDicesToReroll(amountOfDice);
-                diceReRandom = scanner.chooseDice(amountOfRerolls);
-                System.out.println(diceReRandom);
-                rerollDie();
-                printCurrentDice();
-
-
+                while (continuePlaying) {
+                    System.out.println("How many Die would you like to reroll? You must keep atleast one die: ");
+                    //check if loopedPot is less than currentPot
+                    if (firstLoop) {
+                        int amountOfRerolls = scanner.selectHowManyDicesToReroll(amountOfDice);
+                        diceReRandom = scanner.chooseDice(amountOfRerolls);
+                        rerollDie();
+                        printCurrentDice();
+                        firstLoop = false;
+                    } else {
+                        System.out.println("You cannot choose any of the following: " + diceReRandom);
+                        int amountOfRerolls = scanner.selectHowManyDicesToReroll(amountOfDice);
+                        diceReRandom = scanner.chooseDice(amountOfRerolls);
+                        rerollDie();
+                        printCurrentDice();
+                    }
+                    checkScore();
+                    System.out.println("Do you wish to continue trying to play? Y to continue, N to retain points and pass turn");
+                    scanner.clearScanner();
+                    continuePlaying = scanner.yesOrNo();
+                }
+                firstLoop = false;
+                int turnsPlayed = currentPlayer.getTurnsPlayed() + 1;
+                System.out.println(turnsPlayed);
+                currentPlayer.setTurnsPlayed(turnsPlayed);
+                int temp = currentPlayer.getScore();
+                currentPlayer.setScore(temp + currentPot);
+                System.out.println(currentPlayer.getName() + " has " + currentPlayer.getScore() + " points");
             }
-            int temp = currentPlayer.getScore();
-            currentPlayer.setScore(temp+currentPot);
-        }
-    }
+        } while(checkEnd());
+        System.out.println("Winner is: " + checkWinner());
 
+    }
+    private void checkWinner(){
+        for (int i = 0; i < pl)
+    }
+    private boolean checkEnd(){
+        for (int i = 0; i <playerList.size(); i++){
+            Player currentPlayer = playerList.get(i);
+            if (currentPlayer.getScore() >= 100 && checkEqualTurns()){
+                return false;
+            }
+        }
+        return true;
+    }
+    private boolean checkEqualTurns() {
+        int checkEndList[] = new int[playerList.size()];
+        for (int i = 0; i < checkEndList.length; i++) {
+            Player currentPlayer = playerList.get(i);
+            checkEndList[i] = currentPlayer.getTurnsPlayed();
+            if (checkEndList[0] != checkEndList[i]) {
+                return false;
+            }
+        }
+        return true;
+    }
     private void rerollDie(){
         for (int i = 0; i < diceReRandom.size(); i++){
             int j = diceReRandom.get(i)-1;
@@ -180,7 +225,7 @@ public class Game {
         diceSides = scanner.setDiceSides();
     }
 
-    //Returns 1-6
+    //Returns 1-diceSides
     private int rollDice(){
         return (int)(Math.random() * diceSides) + 1;
 
