@@ -9,6 +9,18 @@ public class InputScanner {
     public int scanInt(){
         return scanner.nextInt();
     }
+    public int selectHowManyDicesToReroll(int amountOfDice){
+        int j = scanner.nextInt();
+        boolean continueLoop = false;
+        do {
+
+            if (j < 1 || j > amountOfDice){
+                System.out.println("Please choose a number between 1 and " + amountOfDice);
+                j = scanner.nextInt();
+            }
+        }while (continueLoop);
+        return j;
+    }
     public int setDiceAmount() {
         boolean tempBool = true;
         int temp;
@@ -39,13 +51,13 @@ public class InputScanner {
         } while (tempBool);
         return temp;
     }
-    //This function is extremely picky, please make sure to not input too many numbers or outside of index as its input is a String
-    public List<Integer> chooseDice (int j){
+    public List<Integer> chooseDice (int amountOfRerolls){
         List<Integer> tempList = new ArrayList<>();
-        for (int i = 0; i < j; i++){
-            int k = scanner.nextInt();
-            tempList.add(k);
-        }
+            for (int i = 0; i < amountOfRerolls; i++) {
+                int k = scanner.nextInt();
+                tempList.add(k);
+            }
+
         return tempList;
     }
 
@@ -55,6 +67,24 @@ public class InputScanner {
 
     public void clearScanner(){
         scanner.nextLine();
+    }
+    public boolean yesOrNo(){
+        boolean continueLoop = false;
+
+        do {
+            String temp = scanString();
+            if (temp.equalsIgnoreCase("y")){
+                return true;
+            } else if (temp.equalsIgnoreCase("n")) {
+                return false;
+            } else {
+                System.out.println("Please choose valid input Y or N");
+                continueLoop = true;
+            }
+
+        } while (continueLoop);
+        System.out.println("an error has occured");
+        return true;
     }
 
 }

@@ -13,8 +13,7 @@ public class Game {
     List<Player> playerList = new ArrayList<>();
     //List of current dice in the round
     List<Integer> diceList = new ArrayList<>();
-    List<Integer> remainingDiceList = new ArrayList<>();
-    List<Integer> diceReRandom = new ArrayList<Integer>();
+    List<Integer> diceReRandom = new ArrayList<>();
     //HashMap of all unique values and the amount of occurances, used for calculating score
     Map<Integer, Integer> map = new HashMap<>();
     //Amount of dice rolled per round
@@ -22,8 +21,7 @@ public class Game {
     //How many sides each die has
     int diceSides = 0;
     int currentPot = 0;
-    //How many die you kept each round, must always be 1 or more.
-    int keptDie = 0;
+
     //Sets the value to end the game
     int endScore = 0;
     //My scanner class
@@ -66,26 +64,40 @@ public class Game {
 
         return 0;
     }
+
+    /*
+    * 1# playRound
+    * 2# forloop player
+    * 3# print current dice
+    * 4# choose to stop/continue
+    * 5# choose rerolls
+    * 6# reroll, repeat 4#
+    * 7# When player says "stop" > continue loop, retain values of pot and current dice, start new round with "start over?"
+    * */
     private void playRound(){
+        boolean continuePlaying;
         for (int i = 0; i < playerList.size(); i++) {
             Player currentPlayer = playerList.get(i);
-            System.out.println("Heres your dice " + currentPlayer.getName());
-            printCurrentDice();
-            currentPot = currentPot + checkScore();
-            if (currentPot >= 0) {
-                System.out.println("Current pot is: " + currentPot);
+            //Start the loop here
+                System.out.println("Heres your dice " + currentPlayer.getName());
+                printCurrentDice();
+                currentPot = checkScore();
+                System.out.println("Do you wish to continue trying to play? Y to continue, N to retain points and pass turn");
+                scanner.clearScanner();
+                continuePlaying = scanner.yesOrNo();
+
+            while (continuePlaying) {
                 System.out.println("How many Die would you like to reroll? You must keep atleast one die: ");
-                int amountOfRerolls = scanner.scanInt();
-                keptDie = diceList.size()-amountOfRerolls;
-                System.out.println(keptDie);
+                int amountOfRerolls = scanner.selectHowManyDicesToReroll(amountOfDice);
                 diceReRandom = scanner.chooseDice(amountOfRerolls);
+                System.out.println(diceReRandom);
                 rerollDie();
                 printCurrentDice();
-            } else {
-                System.out.println("You didnt score any points, the pot has been reset");
-                currentPot = 0;
-                keptDie = 0;
+
+
             }
+            int temp = currentPlayer.getScore();
+            currentPlayer.setScore(temp+currentPot);
         }
     }
 
@@ -93,17 +105,11 @@ public class Game {
         for (int i = 0; i < diceReRandom.size(); i++){
             int j = diceReRandom.get(i)-1;
             diceList.set(j,ARRAY_LIST_REROLL);
-
-
         }
-
         for (int i = 0; i < diceList.size(); i++){
             int temp = diceList.get(i);
-            if (temp == -1){
-                diceList.set(i,rollDice());
-            } else {
-                remainingDiceList.add(temp);
-                System.out.println(remainingDiceList);
+            if (temp == -1) {
+                diceList.set(i, rollDice());
             }
         }
     }
