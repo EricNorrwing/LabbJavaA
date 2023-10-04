@@ -1,12 +1,9 @@
 package com.ericNorrwing.diceGame;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 
-public class Game {
+public class Game{
 
     //initialize some stuff i might move them later?
     //List of all current players
@@ -23,10 +20,9 @@ public class Game {
     int currentPot = 0;
 
     //Sets the value to end the game
-    int endScore = 0;
+    int endScore = 500;
     //My scanner class
     InputScanner scanner = new InputScanner();
-    final int ARRAY_LIST_REROLL = -1;
 
     //Welcome to the main game
     public void playGame(){
@@ -80,8 +76,7 @@ public class Game {
         int loopedPot = 0;
         do {
 
-            for (int i = 0; i < playerList.size(); i++) {
-                Player currentPlayer = playerList.get(i);
+            for (Player currentPlayer : playerList) {
                 //Start the loop here
                 System.out.println("Heres your dice " + currentPlayer.getName());
                 printCurrentDice();
@@ -120,16 +115,29 @@ public class Game {
                 System.out.println(currentPlayer.getName() + " has " + currentPlayer.getScore() + " points");
             }
         } while(checkEnd());
-        System.out.println("Winner is: " + checkWinner());
+        System.out.println("Winners are: ");
+        checkWinner();
 
     }
     private void checkWinner(){
-        for (int i = 0; i < pl)
+
+        int leader = 0;
+        for (Player currentPlayer : playerList) {
+            if (leader < currentPlayer.getScore()) {
+                leader = currentPlayer.getScore();
+            }
+        }
+        for (Player currentPlayer : playerList) {
+            if (leader == currentPlayer.getScore()) {
+                System.out.println(currentPlayer.getName() + " ");
+            }
+        }
+
     }
     private boolean checkEnd(){
-        for (int i = 0; i <playerList.size(); i++){
-            Player currentPlayer = playerList.get(i);
-            if (currentPlayer.getScore() >= 100 && checkEqualTurns()){
+        for (Player currentPlayer : playerList) {
+            System.out.println(currentPlayer.getScore());
+            if (currentPlayer.getScore() >= endScore && checkEqualTurns()) {
                 return false;
             }
         }
@@ -146,16 +154,16 @@ public class Game {
         }
         return true;
     }
-    private void rerollDie(){
-        for (int i = 0; i < diceReRandom.size(); i++){
-            int j = diceReRandom.get(i)-1;
-            diceList.set(j,ARRAY_LIST_REROLL);
-        }
-        for (int i = 0; i < diceList.size(); i++){
-            int temp = diceList.get(i);
-            if (temp == -1) {
-                diceList.set(i, rollDice());
+    private void printSavedDice(int j){
+        for (int i: diceList){
+            if (i != j){
+                System.out.println(i);
             }
+        }
+    }
+    private void rerollDie(){
+        for (Integer j : diceReRandom) {
+            diceList.set(j-1, rollDice());
         }
     }
     private int checkScore(){

@@ -17,6 +17,9 @@ public class InputScanner {
             if (j < 1 || j > amountOfDice){
                 System.out.println("Please choose a number between 1 and " + amountOfDice);
                 j = scanner.nextInt();
+                continueLoop = true;
+            } else {
+                continueLoop = false;
             }
         }while (continueLoop);
         return j;
