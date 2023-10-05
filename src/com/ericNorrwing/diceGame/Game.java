@@ -10,6 +10,8 @@ public class Game{
     List<Player> playerList = new ArrayList<>();
     //List of current dice in the round
     List<Integer> diceList = new ArrayList<>();
+    List<Integer> savedDiceList = new ArrayList<>();
+    List<Integer> rerolledDiceList = new ArrayList<>();
     List<Integer> diceReRandom = new ArrayList<>();
     //HashMap of all unique values and the amount of occurances, used for calculating score
     Map<Integer, Integer> map = new HashMap<>();
@@ -18,6 +20,7 @@ public class Game{
     //How many sides each die has
     int diceSides = 0;
     int currentPot = 0;
+    int totalPot = 0;
 
     //Sets the value to end the game
     int endScore = 500;
@@ -73,7 +76,6 @@ public class Game{
     private void playRound(){
         boolean continuePlaying;
         boolean firstLoop = true;
-        int loopedPot = 0;
         do {
 
             for (Player currentPlayer : playerList) {
@@ -82,24 +84,35 @@ public class Game{
                 printCurrentDice();
                 currentPot = checkScore();
                 System.out.println("Do you wish to continue trying to play? Y to continue, N to retain points and pass turn");
-                scanner.clearScanner();
+                //scanner.clearScanner();
                 continuePlaying = scanner.yesOrNo();
 
                 while (continuePlaying) {
-                    System.out.println("How many Die would you like to reroll? You must keep atleast one die: ");
-                    //check if loopedPot is less than currentPot
+                    System.out.println("How many Die would you like to reroll? You must keep atleast one die: " );
                     if (firstLoop) {
                         int amountOfRerolls = scanner.selectHowManyDicesToReroll(amountOfDice);
-                        diceReRandom = scanner.chooseDice(amountOfRerolls);
+                        diceReRandom = scanner.chooseDice(amountOfRerolls,rerolledDiceList);
+                        saveDice();
                         rerollDie();
                         printCurrentDice();
                         firstLoop = false;
+                        currentPot = checkScore();
                     } else {
-                        System.out.println("You cannot choose any of the following: " + diceReRandom);
-                        int amountOfRerolls = scanner.selectHowManyDicesToReroll(amountOfDice);
-                        diceReRandom = scanner.chooseDice(amountOfRerolls);
-                        rerollDie();
-                        printCurrentDice();
+                        //If you used all dice in diceList it starts new dice here, without resetting the pot
+                        if (savedDiceList.size() == amountOfDice) {
+                            rollNewRound();
+                            totalPot = currentPot + checkScore();
+                            savedDiceList.clear();
+                        }
+
+                            System.out.println("You cannot choose any of the following: " + savedDiceList);
+                            int amountOfRerolls = scanner.selectHowManyDicesToReroll(amountOfDice);
+                            diceReRandom = scanner.chooseDice(amountOfRerolls,rerolledDiceList);
+                            saveDice();
+                            rerollDie();
+                            printCurrentDice();
+                            currentPot = checkScore();
+
                     }
                     checkScore();
                     System.out.println("Do you wish to continue trying to play? Y to continue, N to retain points and pass turn");
@@ -108,11 +121,11 @@ public class Game{
                 }
                 firstLoop = false;
                 int turnsPlayed = currentPlayer.getTurnsPlayed() + 1;
-                System.out.println(turnsPlayed);
                 currentPlayer.setTurnsPlayed(turnsPlayed);
                 int temp = currentPlayer.getScore();
-                currentPlayer.setScore(temp + currentPot);
+                currentPlayer.setScore(temp + currentPot+ totalPot);
                 System.out.println(currentPlayer.getName() + " has " + currentPlayer.getScore() + " points");
+
             }
         } while(checkEnd());
         System.out.println("Winners are: ");
@@ -154,11 +167,10 @@ public class Game{
         }
         return true;
     }
-    private void printSavedDice(int j){
-        for (int i: diceList){
-            if (i != j){
-                System.out.println(i);
-            }
+    private void saveDice(){
+        for (int i: diceReRandom){
+            savedDiceList.add(i);
+
         }
     }
     private void rerollDie(){
@@ -225,12 +237,13 @@ public class Game{
             Player player = new Player(scanner.scanString(), 0,0,0);
             playerList.add(player);
 
-
         }
         System.out.println("How many dice would you like to use? (Recommended is 6, but values accepted are 1-20):  ");
         amountOfDice = scanner.setDiceAmount();
         System.out.println("How many sides does each die have?");
         diceSides = scanner.setDiceSides();
+        System.out.println("At what score does the game end? (Offical rules is 10 000, recommend 500~ for testing");
+        endScore = scanner.scanInt();
     }
 
     //Returns 1-diceSides
@@ -240,6 +253,7 @@ public class Game{
     }
 
     private void rollNewRound(){
+        diceList.clear();
         for(int i = 0; i < amountOfDice; i++){
             diceList.add(rollDice());
 

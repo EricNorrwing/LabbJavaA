@@ -54,12 +54,17 @@ public class InputScanner {
         } while (tempBool);
         return temp;
     }
-    public List<Integer> chooseDice (int amountOfRerolls){
+    public List<Integer> chooseDice (int amountOfRerolls,List<Integer> rerolledDiceList){
         List<Integer> tempList = new ArrayList<>();
-        System.out.println("Please insert " + amountOfRerolls + " numbers");
+        System.out.println("Please insert " + amountOfRerolls + " numbers: chose by picking the slot it is in (so 1 is the first number)");
             for (int i = 0; i < amountOfRerolls; i++) {
                 int k = scanner.nextInt();
-                tempList.add(k);
+
+                    if (rerolledDiceList.contains(k)){
+                        System.out.println("Sorry this value has already been played. try another number");
+                        k = scanner.nextInt();
+                    }
+                    tempList.add(k);
             }
 
         return tempList;
