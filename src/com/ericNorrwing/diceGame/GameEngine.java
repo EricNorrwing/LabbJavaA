@@ -10,8 +10,11 @@ public class GameEngine{
     List<Player> playerList = new ArrayList<>();
     //List of current dice in the round
     List<Die> diceList = new ArrayList<>();
+    //list of dices that was rerolled last asking
+    List<Die> rerolledDice = new ArrayList<>();
     //HashMap of all unique values and the amount of occurances, used for calculating score
-    Map<Integer, Integer> map = new HashMap<>();
+    Map<Integer, Integer> allDiceOccurances = new HashMap<>();
+    Map<Integer, Integer> newRollDiceOccurances = new HashMap<>();
 
     InputScanner scanner = new InputScanner();
 
@@ -27,13 +30,20 @@ public class GameEngine{
             do{
                 System.out.println("Heres your dice " + currentPlayer.getName());
                 printCurrentDice();
-                currentPot = checkScore();
+                currentPot = checkScore(allDiceOccurances,diceList);
 
                 //If player wants to continue
                 System.out.println("Do you wish to continue playing, Y/N");
                 continuePlaying = passTurn(currentPot, rerolledPot, scanner.yesOrNo());
 
-                keepDice();
+                // TODO - fix Function controlling if "non" saved dice ends your turn
+                //checkIfNewDiceScored();
+
+                int j = keepDice(newRollDiceOccurances,rerolledDice);
+                updateMap();
+                // TODO - Fix this function?
+                //checkIfAllDiceAreRerolled();
+                int k = 0;
 
             }while(!continuePlaying);
 
@@ -54,7 +64,7 @@ public class GameEngine{
 
 
 
-    private void keepDice(){
+    private int keepDice(Map<Integer, Integer> newRollDiceOccurances, List<Die> rerolledDices){
         System.out.println("Please choose the amount of dice to keep");
         List<Integer> rerollableDice = scanner.chooseDice(scanner.selectDiceToKeep(diceList));
         System.out.println("Which dice do you wish to keep? enter the values and enter between each");
@@ -64,16 +74,21 @@ public class GameEngine{
         }
 
         for (Die die: diceList){
+
             if (!die.isSaved()){
                 die.setValue(rollDice());
+                rerolledDices.add(die);
+                newRollDiceOccurances.put(die.getValue(),0);
             }
+
         }
-        updateMap();
+
+        return checkScore(newRollDiceOccurances, rerolledDices);
 
     }
     private void updateMap(){
-        map.clear();
-        checkScore();
+        allDiceOccurances.clear();
+        checkScore(allDiceOccurances, diceList);
     }
     private int rollDice(){
         Die die = diceList.get(0);
@@ -83,36 +98,35 @@ public class GameEngine{
         return currentPot < 0 || rerolledPot < 0 && continueLoop;
     }
     //returns the score value of the current dice in diceList
-    private int checkScore(){
-        initializesMap();
-        return calculateScore();
+    private int checkScore(Map<Integer, Integer> source,List<Die> dices){
+        return initializeOccurances(source,dices);
     }
     //initializes map so that calculate score can use it
-    private void initializesMap(){
-
+    private int initializeOccurances(Map<Integer,Integer> source, List<Die> dices){
         int incrementValue = 0;
         //Puts ALL the values from diceList<> as keys in map
-        for (int i = 0; i < diceList.toArray().length; i++){
-            Die die = diceList.get(i);
-            map.put(die.getValue(), incrementValue);
+        for (Die die : dices) {
+            source.put(die.getValue(), incrementValue);
         }
         /*
         Iterates through DiceList again, for every value it then digs up the map.get(i) list
         saves the value, increments it, and adds it back.
         This means it saves the amount of occurrences of each die in the map.
         */
-        for (Die die: diceList){
-            incrementValue = map.get(die.getValue());
+        for (Die die: dices){
+            incrementValue = source.get(die.getValue());
             incrementValue++;
-            map.put(die.getValue(), incrementValue);
+            source.put(die.getValue(), incrementValue);
         }
+
+        return calculateScore(source);
     }
     //Checks the score of the current DiceList
-    private int calculateScore(){
+    private int calculateScore(Map<Integer,Integer> source){
         int score = 0;
-        for (int i: map.keySet()){
-            if (map.get(i)>= 3){
-                int scoreMultiplier = map.get(i)-3;
+        for (int i: source.keySet()){
+            if (source.get(i)>= 3){
+                int scoreMultiplier = source.get(i)-3;
                 if (i == 1) {
                     score = score + 1000*(int)Math.pow(2,scoreMultiplier);
 
@@ -122,12 +136,11 @@ public class GameEngine{
                 }
 
             } else if (i == 1){
-                score = score + 100*map.get(i);
+                score = score + 100* source.get(i);
             } else if (i == 5) {
-                score = score + 50*map.get(i);
+                score = score + 50* source.get(i);
             }
         }
-        // TODO - Remove maybe?
         System.out.println("The current dice is worth: " + score);
         return score;
     }
