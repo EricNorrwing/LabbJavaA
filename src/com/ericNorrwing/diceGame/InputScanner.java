@@ -1,34 +1,40 @@
 package com.ericNorrwing.diceGame;
 
 import java.util.ArrayList;
+import java.util.InputMismatchException;
 import java.util.Scanner;
 import java.util.List;
 public class InputScanner {
     Scanner scanner = new Scanner(System.in).useDelimiter("\\n");
 
+    //Ensures int input through looped statement
     public int scanInt(){
-        return scanner.nextInt();
+        int userInput = 0;
+        while(true){
+            if (scanner.hasNextInt()){
+                userInput = scanner.nextInt();
+                break;
+            } else {
+                scanner.nextLine();
+                System.out.println("Invalid input, try again");
+            }
+        }
+        return userInput;
     }
     public int selectDiceToKeep(List<Die> diceList) {
-        boolean continueLoop = false;
-        int value = 0;
-        do {
-            value = scanInt();
-            if (value < 1 || value > diceList.size()){
+        int userInput = 0;
+            userInput = scanInt();
+            if (userInput < 1 || userInput > diceList.size()){
                 System.out.println("Invalid number, please try again");
-                value = scanInt();
+                userInput = scanInt();
             }
-
-
-        }while(scanner.hasNextInt());
-
-        return value;
+        return userInput;
     }
     public int setDiceAmount() {
         boolean tempBool = true;
         int temp;
         do {
-            temp = scanner.nextInt();
+            temp = scanInt();
             if (temp <= 0 || temp >= 20) {
                 System.out.println("That value is outside bounds, please chose a value between 1-20");
             } else {
@@ -54,6 +60,7 @@ public class InputScanner {
         } while (tempBool);
         return temp;
     }
+    // TODO Clean this up
     public List<Integer> chooseDice (int amountOfRerolls){
         List<Integer> tempList = new ArrayList<>();
         System.out.println("Please insert " + amountOfRerolls + " numbers: chose by picking the slot it is in (so 1 is the first number)");

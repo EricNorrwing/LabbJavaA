@@ -34,10 +34,8 @@ public class GameEngine{
                 continuePlaying = passTurn(currentPot, rerolledPot, scanner.yesOrNo());
 
                 keepDice();
-                System.out.println(diceList);
 
-
-            }while(currentPot > 0 || rerolledPot > 0 || !continuePlaying);
+            }while(!continuePlaying);
 
 
             System.out.println("Do you wish to continue trying to play? Y to continue, N to retain points and pass turn");
@@ -59,7 +57,7 @@ public class GameEngine{
     private void keepDice(){
         System.out.println("Please choose the amount of dice to keep");
         List<Integer> rerollableDice = scanner.chooseDice(scanner.selectDiceToKeep(diceList));
-        System.out.println("Which dice do you wish to keep? (Chose items in the list, seperator is space");
+        System.out.println("Which dice do you wish to keep? enter the values and enter between each");
         for (int i: rerollableDice){
             Die die = diceList.get(i-1);
             die.setSaved(true);
@@ -70,9 +68,13 @@ public class GameEngine{
                 die.setValue(rollDice());
             }
         }
+        updateMap();
 
     }
-
+    private void updateMap(){
+        map.clear();
+        checkScore();
+    }
     private int rollDice(){
         Die die = diceList.get(0);
         return (int)(Math.random() * die.getSides()) + 1;
@@ -126,7 +128,7 @@ public class GameEngine{
             }
         }
         // TODO - Remove maybe?
-        System.out.println(score);
+        System.out.println("The current dice is worth: " + score);
         return score;
     }
     private void printCurrentDice(){
@@ -147,7 +149,7 @@ public class GameEngine{
 
         }
         System.out.println("How many dice would you like to use?" +
-                "(Recommended is 6, but values accepted are 1-20) " +
+                "(Recommended is 6, but values accepted are 1-20) " + "\n" +
                 "and how many sides does the dice have?(Recommended is 6)  ");
         createDice(scanner.setDiceAmount(), scanner.setDiceSides());
         System.out.println("At what score does the game end? (Offical rules is 10 000, recommend 500~ for testing");
@@ -173,8 +175,7 @@ public class GameEngine{
     }
     //Sets new random values in diceList
     private void initializeDiceListValues(List<Die> diceList){
-        for (int i = 0; i < diceList.size(); i++){
-            Die die = diceList.get(i);
+        for (Die die : diceList) {
             die.setValue(rollDice());
         }
     }
