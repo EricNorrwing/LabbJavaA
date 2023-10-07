@@ -5,14 +5,6 @@ import java.util.*;
 
 public class Game {
 
-    // TODO ORDER
-    // 1# newGame();
-    // 2#
-
-
-    //initialize some stuff i might move them later?
-
-
     //Sets the value to end the game
     int endScore = 500;
     //My scanner class
@@ -24,64 +16,24 @@ public class Game {
         System.out.println("Welcome to the menu: Please make a choice: ");
         System.out.println("1. New Game \n2. Check highscore \n3. Exit game");
 
-        //Runs the game through switch
+        //Runs a simple menu to start game or exit
         switch (scanner.scanInt()) {
             case 1 -> {
                 runGame();
             }
-            case 2 -> {
-                // testAllTheStuff();
-                // calculateScore();
+            case 2 ->{
+                System.exit(0);
             }
-            //getHighscore();
-            //exitGame();
             default -> {
                 System.out.println("Please enter a valid alternative. Values accepted are 1-3");
-                return;
             }
         }
     }
-    private int runGame() {
+
+    //The actual game runs here, to ensure that the game is fresh if the first choice is selected again
+    private void runGame() {
         game.newGame();
         game.play();
-
-        return 0;
     }
 }
 
-   /* private void checkWinner(){
-
-        int leader = 0;
-        for (Player currentPlayer : playerList) {
-            if (leader < currentPlayer.getScore()) {
-                leader = currentPlayer.getScore();
-            }
-        }
-        for (Player currentPlayer : playerList) {
-            if (leader == currentPlayer.getScore()) {
-                System.out.println(currentPlayer.getName() + " ");
-            }
-        }
-
-    }
-    private boolean checkEnd(){
-        for (Player currentPlayer : playerList) {
-            System.out.println(currentPlayer.getScore());
-            if (currentPlayer.getScore() >= endScore && checkEqualTurns()) {
-                return false;
-            }
-        }
-        return true;
-    }
-    private boolean checkEqualTurns() {
-        int checkEndList[] = new int[playerList.size()];
-        for (int i = 0; i < checkEndList.length; i++) {
-            Player currentPlayer = playerList.get(i);
-            checkEndList[i] = currentPlayer.getTurnsPlayed();
-            if (checkEndList[0] != checkEndList[i]) {
-                return false;
-            }
-        }
-        return true;
-    }
-*/

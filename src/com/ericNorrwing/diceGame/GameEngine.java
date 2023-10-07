@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+
 public class GameEngine{
     //List of all current players
     List<Player> playerList = new ArrayList<>();
@@ -14,59 +15,122 @@ public class GameEngine{
     List<Die> rerolledDice = new ArrayList<>();
     //HashMap of all unique values and the amount of occurances, used for calculating score
     Map<Integer, Integer> allDiceOccurances = new HashMap<>();
+    //Hashmap of all unique values in the rerolled dice list, used for calculating if you scored points
     Map<Integer, Integer> newRollDiceOccurances = new HashMap<>();
 
+    //instantiates the "InputScanner" class
     InputScanner scanner = new InputScanner();
 
+    //Selects a point at which the game checks for winners
     int endScore = 0;
 
-
+    //This is the general gameplay loop that runs once a game has been initialized
     protected void play(){
+        int totalpot = 0;
         int currentPot = 0;
         int rerolledPot = 0;
-        boolean continuePlaying;
-        for (Player currentPlayer : playerList) {
-            //Start the loop here
-            do{
-                System.out.println("Heres your dice " + currentPlayer.getName());
-                printCurrentDice();
-                currentPot = checkScore(allDiceOccurances,diceList);
+        do {
+            for (Player currentPlayer : playerList) {
+                //Start the loop here
+                do {
+                    System.out.println("Heres your dice " + currentPlayer.getName());
+                    printCurrentDice();
+                    if (checkScore(allDiceOccurances, diceList) == 0) {
+                        System.out.println("You scored no point and the turn passes");
+                        totalpot = 0;
+                        initializeDiceListValues(diceList);
+                        break;
+                    }
+                    System.out.println("the total pot is: " + totalpot);
+                    //If player wants to continue
+                    System.out.println("Do you wish to continue playing, Y/N");
+                    if (!scanner.yesOrNo()) {
+                        break;
+                    }
 
-                //If player wants to continue
-                System.out.println("Do you wish to continue playing, Y/N");
-                continuePlaying = passTurn(currentPot, rerolledPot, scanner.yesOrNo());
+                    rerolledPot = keepDice(newRollDiceOccurances, rerolledDice);
+                    if (checkIfAllDiceAreRerolled(diceList)){
+                        resetDice(diceList);
+                        initializeDiceListValues(diceList);
+                          totalpot = totalpot +  checkScore(allDiceOccurances, diceList);
+                    }
+                    updateMap();
+                    if (rerolledPot == 0) {
+                        break;
+                    }
 
-                // TODO - fix Function controlling if "non" saved dice ends your turn
-                //checkIfNewDiceScored();
+                    //If all dices are rerolled, save the current pot and start fresh dice
 
-                int j = keepDice(newRollDiceOccurances,rerolledDice);
-                updateMap();
-                // TODO - Fix this function?
-                //checkIfAllDiceAreRerolled();
-                int k = 0;
+                    // TODO
+                } while (true);
+                currentPlayer.setScore(currentPlayer.getScore()+currentPot+totalpot);
 
-            }while(!continuePlaying);
-
-
-            System.out.println("Do you wish to continue trying to play? Y to continue, N to retain points and pass turn");
-            //scanner.clearScanner();
-            continuePlaying = scanner.yesOrNo();
-
-
-        }
+            }
+        }while (checkEnd()) ;
+        System.out.println("And the winners are: ");
+        checkWinner();
     }
 
+    //a simple return of all dices that are not status "saved"
+    protected int availableDiceForReroll(){
+        int value = 0;
+        for (Die die: diceList){
+            if (!die.isSaved()){
+                value++;
+            }
+        }
+        return value;
+    }
+    //method checking if all dices have been rerolled, used for setting up a fresh list of dice
+    private boolean checkIfAllDiceAreRerolled(List<Die> diceList) {
+        for (Die die : diceList) {
+            if (!die.isSaved()) {
+                return false; // If any die is not saved, return false
+            }
+        }
+        return true; // If all dice are saved, return true
+    }
+    //Checks who won the game, after the loop has ended
+    private void checkWinner(){
+        int leader = 0;
+        for (Player currentPlayer : playerList) {
+            if (leader < currentPlayer.getScore()) {
+                leader = currentPlayer.getScore();
+            }
+        }
+        for (Player currentPlayer : playerList) {
+            if (leader == currentPlayer.getScore()) {
+                System.out.printf("%s with %d score %n", currentPlayer.getName(), currentPlayer.getScore());
+            }
+        }
+    }
+    //Checks if it should end the loop because someone reached the correct criteras
+    private boolean checkEnd() {
+        for (Player currentPlayer : playerList) {
+            System.out.println(currentPlayer.getScore());
+            if (currentPlayer.getScore() >= endScore && checkEqualTurns()) {
+                return false;
+            }
+        }
+        return true;
+    }
+    //Checks if everyone has played an even amount of turns so that nobody gets cheated
+    private boolean checkEqualTurns() {
+        int[] checkEndList = new int[playerList.size()];
+        for (int i = 0; i < checkEndList.length; i++) {
+            Player currentPlayer = playerList.get(i);
+            checkEndList[i] = currentPlayer.getTurnsPlayed();
+            if (checkEndList[0] != checkEndList[i]) {
+                return false;
+            }
+        }
+        return true;
+    }
 
-
-
-
-
-
-
-
+    //returns an int signifying the amount of score based off which dice and map was sent to the method
     private int keepDice(Map<Integer, Integer> newRollDiceOccurances, List<Die> rerolledDices){
         System.out.println("Please choose the amount of dice to keep");
-        List<Integer> rerollableDice = scanner.chooseDice(scanner.selectDiceToKeep(diceList));
+        List<Integer> rerollableDice = scanner.chooseDice(scanner.selectDiceToKeep(availableDiceForReroll()),diceList);
         System.out.println("Which dice do you wish to keep? enter the values and enter between each");
         for (int i: rerollableDice){
             Die die = diceList.get(i-1);
@@ -86,16 +150,15 @@ public class GameEngine{
         return checkScore(newRollDiceOccurances, rerolledDices);
 
     }
+    //clears the current allDiceOccurances map so that it does not add values once dice is rerolled
     private void updateMap(){
         allDiceOccurances.clear();
         checkScore(allDiceOccurances, diceList);
     }
-    private int rollDice(){
+    //Randomizes a value between 1 and diceSides (As listed in the Die class)
+    public int rollDice(){
         Die die = diceList.get(0);
         return (int)(Math.random() * die.getSides()) + 1;
-    }
-    private boolean passTurn(int currentPot, int rerolledPot, boolean continueLoop){
-        return currentPot < 0 || rerolledPot < 0 && continueLoop;
     }
     //returns the score value of the current dice in diceList
     private int checkScore(Map<Integer, Integer> source,List<Die> dices){
@@ -141,7 +204,6 @@ public class GameEngine{
                 score = score + 50* source.get(i);
             }
         }
-        System.out.println("The current dice is worth: " + score);
         return score;
     }
     private void printCurrentDice(){
@@ -149,6 +211,7 @@ public class GameEngine{
             System.out.print(die.getValue() + " ");
         }
         System.out.println("\n");
+        System.out.println("The current dice is worth: " + checkScore(allDiceOccurances,diceList));
     }
     //Initializes Players/Die and puts them in lists
     public void newGame(){
@@ -172,7 +235,7 @@ public class GameEngine{
 
     }
     //Creates new Die to fill up DiceList
-    private void createDice(int amount, int sides){
+    public void createDice(int amount, int sides){
         for (int i = 0; i < amount; i++){
             diceList.add(new Die(0, sides));
         }
@@ -180,14 +243,14 @@ public class GameEngine{
     }
     //Resets the diceList by making all values 0
     private void resetDice(List<Die> diceList){
-        //Resets diceList when new round begins
+        //Resets diceList
         for (Die d: diceList) {
             d.setValue(0);
             d.setSaved(false);
         }
     }
     //Sets new random values in diceList
-    private void initializeDiceListValues(List<Die> diceList){
+    public void initializeDiceListValues(List<Die> diceList){
         for (Die die : diceList) {
             die.setValue(rollDice());
         }
